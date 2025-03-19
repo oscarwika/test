@@ -17,77 +17,100 @@ header {
     background-size: cover;
     background-position: center;
     color: white;
-    text-align: center;
-    padding: 4rem 0;
+    padding: 1.5rem 2rem;
 }
 
 .header-content {
-    background-color: rgba(44, 62, 80, 0.7);
-    display: inline-block;
-    padding: 2rem;
-    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 header h1 {
     margin: 0;
-    font-size: 3rem;
+    font-size: 2.5rem;
 }
 
-header p {
-    font-size: 1.5rem;
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
 }
 
-#services {
-    padding: 3rem 1rem;
-    text-align: center;
-    background-color: #fff;
+nav ul li {
+    margin-left: 2rem;
 }
 
-.services-container {
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #e67e22;
+}
+
+main {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
-}
-
-.service {
-    background-color: #ecf0f1;
-    margin: 1rem;
+    align-items: center;
+    min-height: calc(100vh - 300px);
     padding: 2rem;
+}
+
+.slideshow-container {
+    max-width: 800px;
+    position: relative;
+    margin: auto;
+}
+
+.slide {
+    display: none;
+}
+
+.slide img {
+    width: 100%;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    width: 300px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    opacity: 0;
-    animation: fadeInUp 0.5s ease-in-out forwards;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.service:nth-child(1) { animation-delay: 0.1s; }
-.service:nth-child(2) { animation-delay: 0.3s; }
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+.fade {
+    animation: fade 1.5s ease-in-out;
 }
 
-.service:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+@keyframes fade {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
 }
 
-.service-icon {
-    font-size: 3rem;
-    color: #e67e22;
-    margin-bottom: 1rem;
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.3s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    background-color: rgba(0,0,0,0.5);
 }
 
-.service h3 {
-    margin: 1rem 0;
-    font-size: 1.8rem;
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
 }
 
-.service p {
-    font-size: 1.1rem;
-    color: #7f8c8d;
+.prev:hover, .next:hover {
+    background-color: #e67e22;
 }
 
 #contact {
@@ -159,8 +182,17 @@ footer {
 }
 
 @media (max-width: 768px) {
-    .services-container { flex-direction: column; align-items: center; }
-    .service { width: 90%; }
-    header h1 { font-size: 2.5rem; }
-    header p { font-size: 1.2rem; }
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    nav ul {
+        margin-top: 1rem;
+    }
+    nav ul li {
+        margin: 0 1rem;
+    }
+    .slideshow-container {
+        max-width: 90%;
+    }
 }
