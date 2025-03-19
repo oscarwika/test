@@ -1,1 +1,140 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salty Paws</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: url('https://images.unsplash.com/photo-1583511655826-05700d52f4d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: #fff;
+            position: relative;
+        }
+
+        /* Overlay to fade the background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px 0;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .brand h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .logo {
+            width: 200px; /* Increased to 200px */
+            height: 200px;
+            margin-top: 10px;
+            background: #fff;
+            border-radius: 10px; /* Slightly rounded corners */
+            /* Replace with actual logo image */
+            background: url('https://via.placeholder.com/200') no-repeat center;
+            background-size: cover;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: #ddd;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand {
+                align-items: center;
+            }
+
+            .nav-menu {
+                margin-top: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="brand">
+                <h1>Salty Paws</h1>
+                <div class="logo"></div>
+            </div>
+            <nav class="nav-menu">
+                <a href="#about">About</a>
+                <a href="#gallery">Gallery</a>
+                <a href="#services">Services</a>
+                <a href="#reviews">Reviews</a>
+                <a href="#faqs">FAQs</a>
+                <a href="#contact">Contact</a>
+                <a href="#location">Location</a>
+            </nav>
+        </header>
+    </div>
+
+    <script>
+        // Basic JavaScript for future interactivity if needed
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Salty Paws website loaded');
+        });
+    </script>
+</body>
+</html>
