@@ -100,3 +100,7 @@ body::before {
         justify-content: center;
     }
 }
+
+p {
+    margin-bottom: 1.5em;
+}
