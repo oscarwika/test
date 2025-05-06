@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salty Paws - Gallery</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .carousel {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-inner {
+            display: flex;
+            flex-direction: row;
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-inner img {
+            height: auto;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -26,6 +42,92 @@
         </header>
         <main>
             <h2>Gallery</h2>
+            <div class="carousel">
+                <div class="carousel-inner"></div>
+            </div>
+        
+            <script>
+                // Replace these with your GitHub details
+                const owner = 'oscarwika'; // Your GitHub username
+                const repo = 'test';  // Your repository name
+                const path = 'gallery';   // Folder name
+        
+                fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const images = data.filter(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
+                        const imageUrls = images.map(file => file.download_url);
+                        initializeCarousel(imageUrls);
+                    })
+                    .catch(error => console.error('Error fetching images:', error));
+        
+                function initializeCarousel(imageUrls) {
+                    const carouselInner = document.querySelector('.carousel-inner');
+                    carouselInner.style.width = `${imageUrls.length * 100}%`;
+        
+                    imageUrls.forEach(url => {
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = 'Gallery image';
+                        img.style.width = `${100 / imageUrls.length}%`;
+                        carouselInner.appendChild(img);
+                    });
+        
+                    let isDragging = false;
+                    let startPosition = 0;
+                    let currentTranslate = 0;
+                    let initialTranslate = 0;
+                    let currentIndex = 0;
+                    const carousel = document.querySelector('.carousel');
+                    const carouselWidth = carousel.getBoundingClientRect().width;
+        
+                    function setSliderPosition() {
+                        carouselInner.style.transform = `translateX(${currentTranslate}%)`;
+                    }
+        
+                    function dragStart(event) {
+                        if (event.type === 'touchstart') {
+                            startPosition = event.touches[0].clientX;
+                        } else {
+                            startPosition = event.clientX;
+                        }
+                        initialTranslate = currentTranslate;
+                        isDragging = true;
+                        carouselInner.style.transition = 'none';
+                    }
+        
+                    function drag(event) {
+                        if (!isDragging) return;
+                        let currentPosition;
+                        if (event.type === 'touchmove') {
+                            currentPosition = event.touches[0].clientX;
+                        } else {
+                            currentPosition = event.clientX;
+                        }
+                        const diff = currentPosition - startPosition;
+                        const percentageDiff = (diff / carouselWidth) * 100;
+                        currentTranslate = initialTranslate + percentageDiff;
+                        setSliderPosition();
+                    }
+        
+                    function dragEnd() {
+                        isDragging = false;
+                        carouselInner.style.transition = 'transform 0.3s ease';
+                        const targetIndex = Math.round(-currentTranslate / 100);
+                        currentIndex = Math.max(0, Math.min(targetIndex, imageUrls.length - 1));
+                        currentTranslate = -currentIndex * 100;
+                        setSliderPosition();
+                    }
+        
+                    carouselInner.addEventListener('mousedown', dragStart);
+                    carouselInner.addEventListener('mousemove', drag);
+                    carouselInner.addEventListener('mouseup', dragEnd);
+                    carouselInner.addEventListener('mouseleave', dragEnd);
+                    carouselInner.addEventListener('touchstart', dragStart);
+                    carouselInner.addEventListener('touchmove', drag);
+                    carouselInner.addEventListener('touchend', dragEnd);
+                }
+            </script>
         </main>
     </div>
     <script>
