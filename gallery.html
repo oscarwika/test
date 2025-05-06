@@ -7,41 +7,88 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         .carousel {
-            width: 50%;
+            width: 100%;
             overflow: hidden;
-            border: 5px solid #000;
+            border: 2px solid #000;
             position: relative;
+            background-color: #f0f0f0;
         }
-
         .carousel-inner {
             display: flex;
             flex-direction: row;
-            transition: transform 0.3s ease;
+            transition: transform 0.5s ease;
         }
-
         .carousel-inner img {
+            width: 100%;
             height: auto;
-            flex-shrink: 0;
+            object-fit: contain;
+            cursor: pointer;
         }
-
         .prev, .next {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
             color: white;
             border: none;
-            padding: 10px;
+            padding: 15px;
             cursor: pointer;
+            font-size: 24px;
+            border-radius: 50%;
             z-index: 10;
         }
-
         .prev {
             left: 10px;
         }
-
         .next {
             right: 10px;
+        }
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .fullscreen-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+        .fullscreen-prev, .fullscreen-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 24px;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .fullscreen-prev {
+            left: 10px;
+        }
+        .fullscreen-next {
+            right: 10px;
+        }
+        .fullscreen-prev:hover, .fullscreen-next:hover {
+            background-color: rgba(0, 0, 0, 0.9);
         }
     </style>
 </head>
@@ -71,6 +118,14 @@
                 <button class="next">❯</button>
             </div>
         
+            <!-- Fullscreen modal -->
+            <div class="fullscreen-modal">
+                <button class="fullscreen-prev">❮</button>
+                <img class="fullscreen-image" src="" alt="Fullscreen image">
+                <button class="fullscreen-next">❯</button>
+                <span class="close-button">×</span>
+            </div>
+        
             <script>
                 // Replace these with your GitHub details
                 const owner = 'oscarwika'; // Your GitHub username
@@ -90,12 +145,13 @@
                     const carouselInner = document.querySelector('.carousel-inner');
                     carouselInner.style.width = `${imageUrls.length * 100}%`;
         
-                    imageUrls.forEach(url => {
+                    imageUrls.forEach((url, index) => {
                         const img = document.createElement('img');
                         img.src = url;
                         img.alt = 'Gallery image';
                         img.style.width = `${100 / imageUrls.length}%`;
                         carouselInner.appendChild(img);
+                        img.addEventListener('click', () => openFullscreen(index));
                     });
         
                     let isDragging = false;
@@ -137,7 +193,7 @@
         
                     function dragEnd() {
                         isDragging = false;
-                        carouselInner.style.transition = 'transform 0.3s ease';
+                        carouselInner.style.transition = 'transform 0.5s ease';
                         const dragDistance = currentTranslate - initialTranslate;
                         const threshold = 50 / imageUrls.length;
         
@@ -175,6 +231,44 @@
                             currentIndex++;
                             currentTranslate = - (currentIndex / imageUrls.length * 100);
                             setSliderPosition();
+                        }
+                    });
+        
+                    // Fullscreen functionality
+                    const modal = document.querySelector('.fullscreen-modal');
+                    const fullscreenImage = document.querySelector('.fullscreen-image');
+                    const closeButton = document.querySelector('.close-button');
+                    const fullscreenPrev = document.querySelector('.fullscreen-prev');
+                    const fullscreenNext = document.querySelector('.fullscreen-next');
+                    let fullscreenIndex;
+        
+                    function openFullscreen(index) {
+                        fullscreenIndex = index;
+                        fullscreenImage.src = imageUrls[index];
+                        modal.style.display = 'flex';
+                    }
+        
+                    closeButton.addEventListener('click', () => {
+                        modal.style.display = 'none';
+                    });
+        
+                    modal.addEventListener('click', (event) => {
+                        if (event.target === modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
+        
+                    fullscreenPrev.addEventListener('click', () => {
+                        if (fullscreenIndex > 0) {
+                            fullscreenIndex--;
+                            fullscreenImage.src = imageUrls[fullscreenIndex];
+                        }
+                    });
+        
+                    fullscreenNext.addEventListener('click', () => {
+                        if (fullscreenIndex < imageUrls.length - 1) {
+                            fullscreenIndex++;
+                            fullscreenImage.src = imageUrls[fullscreenIndex];
                         }
                     });
                 }
