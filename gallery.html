@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         .carousel {
-            width: 50%;
+            width: 100%;
             overflow: hidden;
-            border: 2px solid #000; /* Added border */
-            position: relative; /* For button positioning */
+            border: 2px solid #000;
+            position: relative;
         }
 
         .carousel-inner {
@@ -66,9 +66,9 @@
         <main>
             <h2>Gallery</h2>
             <div class="carousel">
-                <button class="prev">&#10094;</button>
+                <button class="prev">❮</button>
                 <div class="carousel-inner"></div>
-                <button class="next">&#10095;</button>
+                <button class="next">❯</button>
             </div>
         
             <script>
@@ -130,8 +130,8 @@
                             currentPosition = event.clientX;
                         }
                         const diff = currentPosition - startPosition;
-                        const percentageDiff = (diff / carouselWidth) * 100;
-                        currentTranslate = initialTranslate + percentageDiff;
+                        const translationDiff = (diff / carouselWidth) * (100 / imageUrls.length);
+                        currentTranslate = initialTranslate + translationDiff;
                         setSliderPosition();
                     }
         
@@ -139,7 +139,7 @@
                         isDragging = false;
                         carouselInner.style.transition = 'transform 0.3s ease';
                         const dragDistance = currentTranslate - initialTranslate;
-                        const threshold = 30; // 30% of carousel width
+                        const threshold = 50 / imageUrls.length;
         
                         if (dragDistance < -threshold) {
                             currentIndex = Math.min(currentIndex + 1, imageUrls.length - 1);
@@ -147,7 +147,7 @@
                             currentIndex = Math.max(currentIndex - 1, 0);
                         }
         
-                        currentTranslate = -currentIndex * 100;
+                        currentTranslate = - (currentIndex / imageUrls.length * 100);
                         setSliderPosition();
                     }
         
@@ -165,7 +165,7 @@
                     prevButton.addEventListener('click', () => {
                         if (currentIndex > 0) {
                             currentIndex--;
-                            currentTranslate = -currentIndex * 100;
+                            currentTranslate = - (currentIndex / imageUrls.length * 100);
                             setSliderPosition();
                         }
                     });
@@ -173,7 +173,7 @@
                     nextButton.addEventListener('click', () => {
                         if (currentIndex < imageUrls.length - 1) {
                             currentIndex++;
-                            currentTranslate = -currentIndex * 100;
+                            currentTranslate = - (currentIndex / imageUrls.length * 100);
                             setSliderPosition();
                         }
                     });
