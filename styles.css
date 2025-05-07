@@ -63,7 +63,7 @@ body::before {
     background: url('logo.jpg') no-repeat center;
     background-size: cover;
     margin-top: 0px;
-    margin-left: 5px;
+    margin-left: 20px;
 }
 
 .nav-menu {
