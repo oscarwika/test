@@ -51,9 +51,30 @@ document.addEventListener('DOMContentLoaded', function() {
         <link rel="stylesheet" href="assets/css/styles.css">
     `;
     
+    // Create header and navigation
+    const header = `
+        <header class="header">
+            <div class="brand">
+                <h1>Salty Paws</h1>
+                <div class="logo"></div>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="services.html">Services</a>
+                <a href="reviews.html">Reviews</a>
+                <a href="faqs.html">FAQs</a>
+                <a href="contact.html">Contact</a>
+                <a href="location.html">Location</a>
+            </nav>
+        </header>
+    `;
+    
     // Common body structure
     const commonBody = `
         <div class="container">
+            ${header}
             <main>
                 ${document.querySelector('main')?.innerHTML || ''}
             </main>
@@ -76,4 +97,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (pageClass) {
         document.body.className = pageClass;
     }
+
+    // Add the console log script
+    const script = document.createElement('script');
+    script.textContent = `
+        console.log('Salty Paws - ${document.title} page loaded');
+    `;
+    document.body.appendChild(script);
 }); 
