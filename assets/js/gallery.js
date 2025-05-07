@@ -67,6 +67,11 @@ document.addEventListener('DOMContentLoaded', function() {
             height: 80px;
             object-fit: cover;
         }
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
     `;
     document.head.appendChild(style);
 
@@ -81,18 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return `https://raw.githubusercontent.com/${owner}/${repo}/main/${filePath}`;
     }
 
-    // Function to preload images
-    function preloadImages(urls) {
-        return Promise.all(urls.map(url => {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => resolve(url);
-                img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
-                img.src = url;
-            });
-        }));
-    }
-
     // Function to ensure Splide is loaded
     function waitForSplide() {
         return new Promise((resolve) => {
@@ -104,11 +97,75 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    let mainSplide = null;
+    let thumbnailSplide = null;
+
+    // Function to add a single image to the gallery
+    function addImageToGallery(url) {
+        const mainList = document.querySelector('.main-carousel .splide__list');
+        const thumbnailList = document.querySelector('.thumbnail-carousel .splide__list');
+
+        if (!mainList || !thumbnailList) {
+            throw new Error('Gallery elements not found');
+        }
+
+        // Main slide
+        const mainSlide = document.createElement('li');
+        mainSlide.className = 'splide__slide';
+        mainSlide.innerHTML = `<img src="${url}" alt="Gallery image">`;
+        mainList.appendChild(mainSlide);
+
+        // Thumbnail
+        const thumbnailSlide = document.createElement('li');
+        thumbnailSlide.className = 'splide__slide';
+        thumbnailSlide.innerHTML = `<img src="${url}" alt="Thumbnail">`;
+        thumbnailList.appendChild(thumbnailSlide);
+
+        // Refresh Splide if it's already mounted
+        if (mainSplide && thumbnailSplide) {
+            mainSplide.refresh();
+            thumbnailSplide.refresh();
+        }
+    }
+
     // Initialize gallery
     async function initializeGallery() {
         try {
             // Wait for Splide to load
             await waitForSplide();
+
+            // Initialize empty carousels
+            mainSplide = new Splide('.main-carousel', {
+                type: 'fade',
+                rewind: true,
+                pagination: false,
+                arrows: true,
+            });
+
+            thumbnailSplide = new Splide('.thumbnail-carousel', {
+                fixedWidth: 100,
+                gap: 10,
+                rewind: true,
+                pagination: false,
+                isNavigation: true,
+                breakpoints: {
+                    600: {
+                        fixedWidth: 60,
+                        gap: 5,
+                    },
+                },
+            });
+
+            // Sync the two carousels
+            mainSplide.sync(thumbnailSplide);
+            mainSplide.mount();
+            thumbnailSplide.mount();
+
+            // Add loading indicator
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'loading-indicator';
+            loadingIndicator.textContent = 'Loading images...';
+            galleryContainer.appendChild(loadingIndicator);
 
             // Fetch images from GitHub
             const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
@@ -128,13 +185,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Convert to raw content URLs
             const imageUrls = images.map(file => getRawContentUrl(file.url));
-            console.log('Image URLs:', imageUrls);
+            console.log('Found', imageUrls.length, 'images to load');
 
-            // Preload images
-            const loadedUrls = await preloadImages(imageUrls);
-            
-            // Initialize Splide gallery
-            initializeSplideGallery(loadedUrls);
+            // Load images progressively
+            for (const url of imageUrls) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            addImageToGallery(url);
+                            resolve();
+                        };
+                        img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+                        img.src = url;
+                    });
+                } catch (error) {
+                    console.error('Error loading image:', error);
+                }
+            }
+
+            // Remove loading indicator
+            loadingIndicator.remove();
+            console.log('All images loaded successfully');
+
         } catch (error) {
             console.error('Error loading gallery:', error);
             galleryContainer.innerHTML = `
@@ -149,64 +222,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }
-    }
-
-    function initializeSplideGallery(imageUrls) {
-        // Create main slides
-        const mainList = document.querySelector('.main-carousel .splide__list');
-        const thumbnailList = document.querySelector('.thumbnail-carousel .splide__list');
-
-        if (!mainList || !thumbnailList) {
-            throw new Error('Gallery elements not found');
-        }
-
-        // Clear existing slides
-        mainList.innerHTML = '';
-        thumbnailList.innerHTML = '';
-
-        imageUrls.forEach(url => {
-            // Main slide
-            const mainSlide = document.createElement('li');
-            mainSlide.className = 'splide__slide';
-            mainSlide.innerHTML = `<img src="${url}" alt="Gallery image">`;
-            mainList.appendChild(mainSlide);
-
-            // Thumbnail
-            const thumbnailSlide = document.createElement('li');
-            thumbnailSlide.className = 'splide__slide';
-            thumbnailSlide.innerHTML = `<img src="${url}" alt="Thumbnail">`;
-            thumbnailList.appendChild(thumbnailSlide);
-        });
-
-        // Initialize main carousel
-        const mainSplide = new Splide('.main-carousel', {
-            type: 'fade',
-            rewind: true,
-            pagination: false,
-            arrows: true,
-        });
-
-        // Initialize thumbnail carousel
-        const thumbnailSplide = new Splide('.thumbnail-carousel', {
-            fixedWidth: 100,
-            gap: 10,
-            rewind: true,
-            pagination: false,
-            isNavigation: true,
-            breakpoints: {
-                600: {
-                    fixedWidth: 60,
-                    gap: 5,
-                },
-            },
-        });
-
-        // Sync the two carousels
-        mainSplide.sync(thumbnailSplide);
-        mainSplide.mount();
-        thumbnailSplide.mount();
-
-        console.log('Splide gallery initialized successfully');
     }
 
     // Start the initialization process
