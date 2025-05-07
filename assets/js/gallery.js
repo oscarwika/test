@@ -19,17 +19,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const galleryContainer = document.createElement('div');
     galleryContainer.className = 'gallery-container';
     galleryContainer.innerHTML = `
-        <div class="splide main-carousel">
-            <div class="splide__track">
-                <ul class="splide__list">
-                    <!-- Main slides will be inserted here -->
-                </ul>
-            </div>
-        </div>
         <div class="splide thumbnail-carousel">
             <div class="splide__track">
                 <ul class="splide__list">
                     <!-- Thumbnails will be inserted here -->
+                </ul>
+            </div>
+        </div>
+        <div class="splide main-carousel">
+            <div class="splide__track">
+                <ul class="splide__list">
+                    <!-- Main slides will be inserted here -->
                 </ul>
             </div>
         </div>
@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+        }
+        .thumbnail-carousel {
+            margin-bottom: 10px;
         }
         .main-carousel {
             margin-bottom: 20px;
