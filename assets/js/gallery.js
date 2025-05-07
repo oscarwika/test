@@ -93,37 +93,49 @@ document.addEventListener('DOMContentLoaded', function() {
         }));
     }
 
-    // Fetch images from GitHub
-    fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
-        .then(response => {
+    // Function to ensure Splide is loaded
+    function waitForSplide() {
+        return new Promise((resolve) => {
+            if (window.Splide) {
+                resolve();
+            } else {
+                splideJS.onload = resolve;
+            }
+        });
+    }
+
+    // Initialize gallery
+    async function initializeGallery() {
+        try {
+            // Wait for Splide to load
+            await waitForSplide();
+
+            // Fetch images from GitHub
+            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
             if (!response.ok) {
                 throw new Error(`GitHub API responded with status: ${response.status}`);
             }
-            return response.json();
-        })
-        .then(data => {
+
+            const data = await response.json();
             if (!Array.isArray(data)) {
                 throw new Error('Invalid response from GitHub API');
             }
+
             const images = data.filter(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
             if (images.length === 0) {
                 throw new Error('No images found in the specified directory');
             }
-            
+
             // Convert to raw content URLs
             const imageUrls = images.map(file => getRawContentUrl(file.url));
             console.log('Image URLs:', imageUrls);
 
-            // Preload images before initializing gallery
-            return preloadImages(imageUrls);
-        })
-        .then(loadedUrls => {
-            // Wait for Splide to load
-            splideJS.onload = () => {
-                initializeSplideGallery(loadedUrls);
-            };
-        })
-        .catch(error => {
+            // Preload images
+            const loadedUrls = await preloadImages(imageUrls);
+            
+            // Initialize Splide gallery
+            initializeSplideGallery(loadedUrls);
+        } catch (error) {
             console.error('Error loading gallery:', error);
             galleryContainer.innerHTML = `
                 <div style="color: red; padding: 20px; text-align: center;">
@@ -136,12 +148,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     </ul>
                 </div>
             `;
-        });
+        }
+    }
 
     function initializeSplideGallery(imageUrls) {
         // Create main slides
         const mainList = document.querySelector('.main-carousel .splide__list');
         const thumbnailList = document.querySelector('.thumbnail-carousel .splide__list');
+
+        if (!mainList || !thumbnailList) {
+            throw new Error('Gallery elements not found');
+        }
+
+        // Clear existing slides
+        mainList.innerHTML = '';
+        thumbnailList.innerHTML = '';
 
         imageUrls.forEach(url => {
             // Main slide
@@ -184,5 +205,10 @@ document.addEventListener('DOMContentLoaded', function() {
         mainSplide.sync(thumbnailSplide);
         mainSplide.mount();
         thumbnailSplide.mount();
+
+        console.log('Splide gallery initialized successfully');
     }
+
+    // Start the initialization process
+    initializeGallery();
 }); 
