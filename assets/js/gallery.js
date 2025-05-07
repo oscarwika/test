@@ -70,6 +70,24 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
 
+    // Function to convert GitHub API URL to raw content URL
+    function getRawContentUrl(apiUrl) {
+        return apiUrl.replace('api.github.com/repos', 'raw.githubusercontent.com')
+                   .replace('/contents/', '/');
+    }
+
+    // Function to preload images
+    function preloadImages(urls) {
+        return Promise.all(urls.map(url => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(url);
+                img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+                img.src = url;
+            });
+        }));
+    }
+
     // Fetch images from GitHub
     fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
         .then(response => {
@@ -79,25 +97,29 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            console.log('GitHub API response:', data); // Debug log
             if (!Array.isArray(data)) {
                 throw new Error('Invalid response from GitHub API');
             }
             const images = data.filter(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
-            console.log('Filtered images:', images); // Debug log
             if (images.length === 0) {
                 throw new Error('No images found in the specified directory');
             }
-            const imageUrls = images.map(file => file.download_url);
-            console.log('Image URLs:', imageUrls); // Debug log
             
+            // Convert to raw content URLs
+            const imageUrls = images.map(file => getRawContentUrl(file.url));
+            console.log('Image URLs:', imageUrls);
+
+            // Preload images before initializing gallery
+            return preloadImages(imageUrls);
+        })
+        .then(loadedUrls => {
             // Wait for Splide to load
             splideJS.onload = () => {
-                initializeSplideGallery(imageUrls);
+                initializeSplideGallery(loadedUrls);
             };
         })
         .catch(error => {
-            console.error('Error fetching images:', error);
+            console.error('Error loading gallery:', error);
             galleryContainer.innerHTML = `
                 <div style="color: red; padding: 20px; text-align: center;">
                     <p>Failed to load gallery images. Error: ${error.message}</p>
