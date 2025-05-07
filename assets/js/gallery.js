@@ -18,19 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const carouselInner = document.querySelector('.carousel-inner');
         carouselInner.style.width = `${imageUrls.length * 100}%`;
 
-        // Create dots container
-        const dotsContainer = document.createElement('div');
-        dotsContainer.className = 'carousel-dots';
-        document.querySelector('.carousel').appendChild(dotsContainer);
-
-        // Create dots
-        imageUrls.forEach((_, index) => {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            dot.addEventListener('click', () => goToSlide(index));
-            dotsContainer.appendChild(dot);
-        });
-
         imageUrls.forEach((url, index) => {
             const img = document.createElement('img');
             img.src = url;
@@ -50,20 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function setSliderPosition() {
             carouselInner.style.transform = `translateX(${currentTranslate}%)`;
-            updateDots();
-        }
-
-        function updateDots() {
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentIndex);
-            });
-        }
-
-        function goToSlide(index) {
-            currentIndex = index;
-            currentTranslate = -(index / imageUrls.length * 100);
-            setSliderPosition();
         }
 
         function dragStart(event) {
@@ -93,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function dragEnd() {
             isDragging = false;
-            carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            carouselInner.style.transition = 'transform 0.5s ease';
             const dragDistance = currentTranslate - initialTranslate;
             const threshold = 50 / imageUrls.length;
 
@@ -103,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentIndex = Math.max(currentIndex - 1, 0);
             }
 
-            currentTranslate = -(currentIndex / imageUrls.length * 100);
+            currentTranslate = - (currentIndex / imageUrls.length * 100);
             setSliderPosition();
         }
 
@@ -121,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
         prevButton.addEventListener('click', () => {
             if (currentIndex > 0) {
                 currentIndex--;
-                currentTranslate = -(currentIndex / imageUrls.length * 100);
+                currentTranslate = - (currentIndex / imageUrls.length * 100);
                 setSliderPosition();
             }
         });
@@ -129,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
         nextButton.addEventListener('click', () => {
             if (currentIndex < imageUrls.length - 1) {
                 currentIndex++;
-                currentTranslate = -(currentIndex / imageUrls.length * 100);
+                currentTranslate = - (currentIndex / imageUrls.length * 100);
                 setSliderPosition();
             }
         });
@@ -146,23 +119,15 @@ document.addEventListener('DOMContentLoaded', function() {
             fullscreenIndex = index;
             fullscreenImage.src = imageUrls[index];
             modal.style.display = 'flex';
-            // Trigger reflow
-            modal.offsetHeight;
-            modal.classList.add('active');
         }
 
-        function closeFullscreen() {
-            modal.classList.remove('active');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-
-        closeButton.addEventListener('click', closeFullscreen);
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
 
         modal.addEventListener('click', (event) => {
             if (event.target === modal) {
-                closeFullscreen();
+                modal.style.display = 'none';
             }
         });
 
@@ -179,31 +144,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 fullscreenImage.src = imageUrls[fullscreenIndex];
             }
         });
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (event) => {
-            if (modal.style.display === 'flex') {
-                switch(event.key) {
-                    case 'ArrowLeft':
-                        if (fullscreenIndex > 0) {
-                            fullscreenIndex--;
-                            fullscreenImage.src = imageUrls[fullscreenIndex];
-                        }
-                        break;
-                    case 'ArrowRight':
-                        if (fullscreenIndex < imageUrls.length - 1) {
-                            fullscreenIndex++;
-                            fullscreenImage.src = imageUrls[fullscreenIndex];
-                        }
-                        break;
-                    case 'Escape':
-                        closeFullscreen();
-                        break;
-                }
-            }
-        });
-
-        // Initialize first dot as active
-        updateDots();
     }
 }); 
