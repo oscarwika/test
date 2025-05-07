@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="assets/css/styles.css">
     <style>
         body {
-            background: url('background7.jpg') no-repeat center center fixed;
-}
+            background: url('assets/images/backgrounds/background7.jpg') no-repeat center center fixed;
+        }
     </style>
     <style>
         .carousel {
@@ -134,7 +134,7 @@
                 // Replace these with your GitHub details
                 const owner = 'oscarwika'; // Your GitHub username
                 const repo = 'test';  // Your repository name
-                const path = 'gallery';   // Folder name
+                const path = 'assets/images/gallery';   // Updated path to gallery images
         
                 fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
                     .then(response => response.json())
