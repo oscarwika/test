@@ -72,17 +72,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fetch images from GitHub
     fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`GitHub API responded with status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('GitHub API response:', data); // Debug log
+            if (!Array.isArray(data)) {
+                throw new Error('Invalid response from GitHub API');
+            }
             const images = data.filter(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
+            console.log('Filtered images:', images); // Debug log
+            if (images.length === 0) {
+                throw new Error('No images found in the specified directory');
+            }
             const imageUrls = images.map(file => file.download_url);
+            console.log('Image URLs:', imageUrls); // Debug log
             
             // Wait for Splide to load
             splideJS.onload = () => {
                 initializeSplideGallery(imageUrls);
             };
         })
-        .catch(error => console.error('Error fetching images:', error));
+        .catch(error => {
+            console.error('Error fetching images:', error);
+            galleryContainer.innerHTML = `
+                <div style="color: red; padding: 20px; text-align: center;">
+                    <p>Failed to load gallery images. Error: ${error.message}</p>
+                    <p>Please check:</p>
+                    <ul style="text-align: left; display: inline-block;">
+                        <li>The GitHub repository exists and is public</li>
+                        <li>The path '${path}' exists in the repository</li>
+                        <li>There are image files in the directory</li>
+                    </ul>
+                </div>
+            `;
+        });
 
     function initializeSplideGallery(imageUrls) {
         // Create main slides
