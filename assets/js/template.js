@@ -37,4 +37,43 @@ function loadCommonElements() {
 }
 
 // Run when the DOM is loaded
-document.addEventListener('DOMContentLoaded', loadCommonElements); 
+document.addEventListener('DOMContentLoaded', loadCommonElements);
+
+// Template system for common HTML elements
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the current page name for the title
+    const pageName = document.title.split(' - ')[1] || 'Home';
+    
+    // Common head elements
+    const commonHead = `
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="assets/css/styles.css">
+    `;
+    
+    // Common body structure
+    const commonBody = `
+        <div class="container">
+            <main>
+                ${document.querySelector('main')?.innerHTML || ''}
+            </main>
+        </div>
+    `;
+    
+    // Inject common head elements
+    const head = document.head;
+    const existingMeta = head.querySelectorAll('meta, link');
+    existingMeta.forEach(el => el.remove());
+    head.innerHTML = commonHead + head.innerHTML;
+    
+    // Inject common body structure
+    const body = document.body;
+    const mainContent = body.innerHTML;
+    body.innerHTML = commonBody;
+    
+    // Restore any page-specific classes
+    const pageClass = document.body.className;
+    if (pageClass) {
+        document.body.className = pageClass;
+    }
+}); 
