@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salty Paws</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <script src="assets/js/template.js"></script>
-</head>
-<body>
-    <div class="container">
+// Function to load the common elements
+function loadCommonElements() {
+    // Create header and navigation
+    const header = `
         <header class="header">
             <div class="brand">
                 <h1>Salty Paws</h1>
@@ -25,13 +18,23 @@
                 <a href="location.html">Location</a>
             </nav>
         </header>
-        <main>
-        </main>
-    </div>
-    <script>
+    `;
+
+    // Insert the header
+    const container = document.querySelector('.container');
+    if (container) {
+        container.insertAdjacentHTML('afterbegin', header);
+    }
+
+    // Add the console log script
+    const script = document.createElement('script');
+    script.textContent = `
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Salty Paws - Home page loaded');
+            console.log('Salty Paws - ${document.title} page loaded');
         });
-    </script>
-</body>
-</html>
+    `;
+    document.body.appendChild(script);
+}
+
+// Run when the DOM is loaded
+document.addEventListener('DOMContentLoaded', loadCommonElements); 
