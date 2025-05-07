@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             padding: 20px;
         }
         .main-carousel {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .splide__slide img {
             width: 100%;
