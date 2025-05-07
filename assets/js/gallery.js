@@ -72,8 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to convert GitHub API URL to raw content URL
     function getRawContentUrl(apiUrl) {
-        return apiUrl.replace('api.github.com/repos', 'raw.githubusercontent.com')
-                   .replace('/contents/', '/');
+        // Extract the path from the API URL
+        const pathMatch = apiUrl.match(/\/contents\/(.+)$/);
+        if (!pathMatch) {
+            throw new Error('Invalid GitHub API URL format');
+        }
+        const filePath = pathMatch[1];
+        return `https://raw.githubusercontent.com/${owner}/${repo}/main/${filePath}`;
     }
 
     // Function to preload images
