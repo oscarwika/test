@@ -1,148 +1,131 @@
-// Gallery carousel functionality
+// Gallery implementation using Splide.js
 document.addEventListener('DOMContentLoaded', function() {
     // Replace these with your GitHub details
-    const owner = 'oscarwika'; // Your GitHub username
-    const repo = 'test';  // Your repository name
-    const path = 'assets/images/gallery';   // Updated path to gallery images
+    const owner = 'oscarwika';
+    const repo = 'test';
+    const path = 'assets/images/gallery';
 
+    // Add Splide CSS and JS dynamically
+    const splideCSS = document.createElement('link');
+    splideCSS.rel = 'stylesheet';
+    splideCSS.href = 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css';
+    document.head.appendChild(splideCSS);
+
+    const splideJS = document.createElement('script');
+    splideJS.src = 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js';
+    document.head.appendChild(splideJS);
+
+    // Create gallery container
+    const galleryContainer = document.createElement('div');
+    galleryContainer.className = 'gallery-container';
+    galleryContainer.innerHTML = `
+        <div class="splide main-carousel">
+            <div class="splide__track">
+                <ul class="splide__list">
+                    <!-- Main slides will be inserted here -->
+                </ul>
+            </div>
+        </div>
+        <div class="splide thumbnail-carousel">
+            <div class="splide__track">
+                <ul class="splide__list">
+                    <!-- Thumbnails will be inserted here -->
+                </ul>
+            </div>
+        </div>
+    `;
+    document.querySelector('main').appendChild(galleryContainer);
+
+    // Add some basic styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .main-carousel {
+            margin-bottom: 20px;
+        }
+        .splide__slide img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .thumbnail-carousel .splide__slide {
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        .thumbnail-carousel .splide__slide.is-active {
+            opacity: 1;
+        }
+        .thumbnail-carousel .splide__slide img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Fetch images from GitHub
     fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
         .then(response => response.json())
         .then(data => {
             const images = data.filter(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
             const imageUrls = images.map(file => file.download_url);
-            initializeCarousel(imageUrls);
+            
+            // Wait for Splide to load
+            splideJS.onload = () => {
+                initializeSplideGallery(imageUrls);
+            };
         })
         .catch(error => console.error('Error fetching images:', error));
 
-    function initializeCarousel(imageUrls) {
-        const carouselInner = document.querySelector('.carousel-inner');
-        carouselInner.style.width = `${imageUrls.length * 100}%`;
+    function initializeSplideGallery(imageUrls) {
+        // Create main slides
+        const mainList = document.querySelector('.main-carousel .splide__list');
+        const thumbnailList = document.querySelector('.thumbnail-carousel .splide__list');
 
-        imageUrls.forEach((url, index) => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'Gallery image';
-            img.style.width = `${100 / imageUrls.length}%`;
-            carouselInner.appendChild(img);
-            img.addEventListener('click', () => openFullscreen(index));
+        imageUrls.forEach(url => {
+            // Main slide
+            const mainSlide = document.createElement('li');
+            mainSlide.className = 'splide__slide';
+            mainSlide.innerHTML = `<img src="${url}" alt="Gallery image">`;
+            mainList.appendChild(mainSlide);
+
+            // Thumbnail
+            const thumbnailSlide = document.createElement('li');
+            thumbnailSlide.className = 'splide__slide';
+            thumbnailSlide.innerHTML = `<img src="${url}" alt="Thumbnail">`;
+            thumbnailList.appendChild(thumbnailSlide);
         });
 
-        let isDragging = false;
-        let startPosition = 0;
-        let currentTranslate = 0;
-        let initialTranslate = 0;
-        let currentIndex = 0;
-        const carousel = document.querySelector('.carousel');
-        const carouselWidth = carousel.getBoundingClientRect().width;
-
-        function setSliderPosition() {
-            carouselInner.style.transform = `translateX(${currentTranslate}%)`;
-        }
-
-        function dragStart(event) {
-            if (event.type === 'touchstart') {
-                startPosition = event.touches[0].clientX;
-            } else {
-                startPosition = event.clientX;
-            }
-            initialTranslate = currentTranslate;
-            isDragging = true;
-            carouselInner.style.transition = 'none';
-        }
-
-        function drag(event) {
-            if (!isDragging) return;
-            let currentPosition;
-            if (event.type === 'touchmove') {
-                currentPosition = event.touches[0].clientX;
-            } else {
-                currentPosition = event.clientX;
-            }
-            const diff = currentPosition - startPosition;
-            const translationDiff = (diff / carouselWidth) * (100 / imageUrls.length);
-            currentTranslate = initialTranslate + translationDiff;
-            setSliderPosition();
-        }
-
-        function dragEnd() {
-            isDragging = false;
-            carouselInner.style.transition = 'transform 0.5s ease';
-            const dragDistance = currentTranslate - initialTranslate;
-            const threshold = 50 / imageUrls.length;
-
-            if (dragDistance < -threshold) {
-                currentIndex = Math.min(currentIndex + 1, imageUrls.length - 1);
-            } else if (dragDistance > threshold) {
-                currentIndex = Math.max(currentIndex - 1, 0);
-            }
-
-            currentTranslate = - (currentIndex / imageUrls.length * 100);
-            setSliderPosition();
-        }
-
-        carouselInner.addEventListener('mousedown', dragStart);
-        carouselInner.addEventListener('mousemove', drag);
-        carouselInner.addEventListener('mouseup', dragEnd);
-        carouselInner.addEventListener('mouseleave', dragEnd);
-        carouselInner.addEventListener('touchstart', dragStart);
-        carouselInner.addEventListener('touchmove', drag);
-        carouselInner.addEventListener('touchend', dragEnd);
-
-        const prevButton = document.querySelector('.prev');
-        const nextButton = document.querySelector('.next');
-
-        prevButton.addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                currentTranslate = - (currentIndex / imageUrls.length * 100);
-                setSliderPosition();
-            }
+        // Initialize main carousel
+        const mainSplide = new Splide('.main-carousel', {
+            type: 'fade',
+            rewind: true,
+            pagination: false,
+            arrows: true,
         });
 
-        nextButton.addEventListener('click', () => {
-            if (currentIndex < imageUrls.length - 1) {
-                currentIndex++;
-                currentTranslate = - (currentIndex / imageUrls.length * 100);
-                setSliderPosition();
-            }
+        // Initialize thumbnail carousel
+        const thumbnailSplide = new Splide('.thumbnail-carousel', {
+            fixedWidth: 100,
+            gap: 10,
+            rewind: true,
+            pagination: false,
+            isNavigation: true,
+            breakpoints: {
+                600: {
+                    fixedWidth: 60,
+                    gap: 5,
+                },
+            },
         });
 
-        // Fullscreen functionality
-        const modal = document.querySelector('.fullscreen-modal');
-        const fullscreenImage = document.querySelector('.fullscreen-image');
-        const closeButton = document.querySelector('.close-button');
-        const fullscreenPrev = document.querySelector('.fullscreen-prev');
-        const fullscreenNext = document.querySelector('.fullscreen-next');
-        let fullscreenIndex;
-
-        function openFullscreen(index) {
-            fullscreenIndex = index;
-            fullscreenImage.src = imageUrls[index];
-            modal.style.display = 'flex';
-        }
-
-        closeButton.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        fullscreenPrev.addEventListener('click', () => {
-            if (fullscreenIndex > 0) {
-                fullscreenIndex--;
-                fullscreenImage.src = imageUrls[fullscreenIndex];
-            }
-        });
-
-        fullscreenNext.addEventListener('click', () => {
-            if (fullscreenIndex < imageUrls.length - 1) {
-                fullscreenIndex++;
-                fullscreenImage.src = imageUrls[fullscreenIndex];
-            }
-        });
+        // Sync the two carousels
+        mainSplide.sync(thumbnailSplide);
+        mainSplide.mount();
+        thumbnailSplide.mount();
     }
 }); 
