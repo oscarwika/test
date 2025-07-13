@@ -1,0 +1,7 @@
+/* src/index.css - global styles for React app */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: #f8f9fa;
+} 
