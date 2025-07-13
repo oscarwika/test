@@ -3,6 +3,7 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import '@splidejs/react-splide/css';
+import { getImagePath } from '../utils/imageUtils';
 import './Gallery.css';
 
 const Gallery = () => {
@@ -18,7 +19,7 @@ const Gallery = () => {
   const loadGalleryImages = async () => {
     try {
       // Include all gallery images with their variants
-      const galleryImages = [
+      const imagePaths = [
         'images/gallery/PHOTO-2025-05-06-14-31-49.jpg',
         'images/gallery/PHOTO-2025-05-06-14-31-53.jpg',
         'images/gallery/PHOTO-2025-05-06-14-32-06.jpg',
@@ -92,6 +93,9 @@ const Gallery = () => {
         'images/gallery/PHOTO-2025-05-06-14-51-13.jpg',
         'images/gallery/PHOTO-2025-05-06-14-51-13(1).jpg',
       ];
+
+      // Apply the correct path for the current environment
+      const galleryImages = imagePaths.map(path => getImagePath(path));
 
       console.log('Loading gallery images:', galleryImages.length);
       setImages(galleryImages);

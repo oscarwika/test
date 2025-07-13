@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Camera, MapPin, Star } from 'lucide-react';
+import { getImagePath } from '../utils/imageUtils';
 import './Home.css';
 
 const Home = () => {
@@ -124,7 +125,7 @@ const Home = () => {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-                              <img src="images/logos/naari_me.jpg" alt="Naari" />
+                              <img src={getImagePath("images/logos/naari_me.jpg")} alt="Naari" />
             </motion.div>
           </div>
         </div>

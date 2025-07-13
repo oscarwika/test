@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { getImagePath } from '../utils/imageUtils';
 import './Header.css';
 
 const Header = () => {
@@ -32,7 +33,7 @@ const Header = () => {
         <div className="header-content">
           <Link to="/" className="brand" onClick={closeMenu}>
             <div className="logo">
-              <img src="images/logos/logo.jpg" alt="Salty Paws Logo" />
+              <img src={getImagePath("images/logos/logo.jpg")} alt="Salty Paws Logo" />
             </div>
             <h1>Salty Paws</h1>
           </Link>

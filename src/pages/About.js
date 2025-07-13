@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Camera, MapPin, Star } from 'lucide-react';
+import { getImagePath } from '../utils/imageUtils';
 import './About.css';
 
 const About = () => {
@@ -35,7 +36,7 @@ const About = () => {
         >
           <div className="about-hero-content">
             <div className="about-image">
-              <img src="images/logos/naari_me.jpg" alt="Naari" />
+              <img src={getImagePath("images/logos/naari_me.jpg")} alt="Naari" />
             </div>
             <div className="about-intro">
               <h1>About Naari</h1>
