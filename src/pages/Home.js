@@ -124,7 +124,7 @@ const Home = () => {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <img src="/images/logos/naari_me.jpg" alt="Naari" />
+                              <img src="images/logos/naari_me.jpg" alt="Naari" />
             </motion.div>
           </div>
         </div>

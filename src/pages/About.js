@@ -35,7 +35,7 @@ const About = () => {
         >
           <div className="about-hero-content">
             <div className="about-image">
-              <img src="/images/logos/naari_me.jpg" alt="Naari" />
+              <img src="images/logos/naari_me.jpg" alt="Naari" />
             </div>
             <div className="about-intro">
               <h1>About Naari</h1>
