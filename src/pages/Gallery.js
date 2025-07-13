@@ -96,7 +96,11 @@ const Gallery = () => {
 
       // Apply the correct path for the current environment
       const galleryImages = imagePaths.map(path => getImagePath(path));
-
+      
+      // Debug: Log the first few paths to see what's being generated
+      console.log('Environment:', process.env.NODE_ENV);
+      console.log('PUBLIC_URL:', process.env.PUBLIC_URL);
+      console.log('First few image paths:', galleryImages.slice(0, 3));
       console.log('Loading gallery images:', galleryImages.length);
       setImages(galleryImages);
       setLoading(false);
@@ -189,6 +193,19 @@ const Gallery = () => {
         >
           <h1>Photo Gallery</h1>
           <p>Take a look at some of the happy pets I've had the pleasure of caring for</p>
+          
+          {/* Test image to see if any images load */}
+          <div style={{ margin: '20px 0', padding: '20px', background: '#f0f0f0', borderRadius: '8px' }}>
+            <h3>Test Image:</h3>
+            <img 
+              src="images/logos/logo.jpg" 
+              alt="Test Logo" 
+              style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+              onError={(e) => console.error('Test image failed to load:', e.target.src)}
+              onLoad={() => console.log('Test image loaded successfully')}
+            />
+            <p>If you can see the logo above, image loading is working.</p>
+          </div>
         </motion.div>
 
         <motion.div
