@@ -9,7 +9,7 @@ const Header = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: 'Home' },
+    { path: '/home', label: 'Home' },
     { path: '/about', label: 'About' },
     { path: '/gallery', label: 'Gallery' },
     { path: '/services', label: 'Services' },
@@ -31,7 +31,7 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <div className="header-content">
-          <Link to="/" className="brand" onClick={closeMenu}>
+          <Link to="/home" className="brand" onClick={closeMenu}>
             <div className="logo">
               <img src={getImagePath("images/logos/logo.jpg")} alt="Salty Paws Logo" />
             </div>
